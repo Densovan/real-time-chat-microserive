@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
+import { dataSourceOptions } from './db/data-source';
 
 @Module({
   imports: [
@@ -13,12 +14,16 @@ import { UserEntity } from './user.entity';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'postgres',
-        url: configService.get('POSTGRES_URI'),
+      // useFactory: async (configService: ConfigService) => ({
+      //   type: 'postgres',
+      //   url: configService.get('POSTGRES_URI'),
+      //   authLoadEntities: true,
+      //   entities: [UserEntity],
+      //   synchronize: true, // shouldn't be used in production - can cause data loss
+      // }),
+      useFactory: () => ({
+        ...dataSourceOptions,
         authLoadEntities: true,
-        entities: [UserEntity],
-        synchronize: true, // shouldn't be used in production - can cause data loss
       }),
       inject: [ConfigService],
     }),
